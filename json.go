@@ -97,3 +97,4 @@ func (d *data) unmarshalJSON(b []byte) error {
 	}
 	return nil
 }
+
