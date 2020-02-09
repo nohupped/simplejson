@@ -1,12 +1,10 @@
-# SimpleJSON [![Build Status](https://travis-ci.com/nohupped/simplejson.svg?branch=master)](https://travis-ci.com/nohupped/simplejson)
-
-[![codecov.io](https://codecov.io/github/nohupped/simplejson/coverage.svg?branch=master)](https://codecov.io/github/nohupped/simplejson?branch=master)
+# { SimpleJSON } [![Build Status](https://travis-ci.com/nohupped/simplejson.svg?branch=master)](https://travis-ci.com/nohupped/simplejson) [![codecov.io](https://codecov.io/github/nohupped/simplejson/coverage.svg?branch=master)](https://codecov.io/github/nohupped/simplejson?branch=master)
 
 A lame attempt to re-create python's `json.loads()` using `Get()` methods to retrive a key by moving the ugly typeassertions to the library.
 
 ## Why
 
-This is a wrapper over go's `encoding/json`. This uses an `interface{}` to unmarshal the json and the exposed interface method `Get()` can be used to get the value of a key if it is a hashmap or the index if it is an array.
+This is just a wrapper over go's `encoding/json`. This uses an `interface{}` to unmarshal the json and the exposed interface method `Get()` uses `type assertions` internally to get the value of a key if it is a hashmap or the index if it is an array. Since this moves the ugly typeassertions for nested json parsing inside the library, the code becomes easier to read.
 
 ## Example
 
@@ -75,4 +73,10 @@ Because this uses `interface{}` to unmarshal json, the structure of json is not 
 
 ## `Get()` function panics if the key is not present
 
-Instead of returning an error, `Get()` function panics when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as `Get("foo").Get("bar").Get("", 2)` without needing to evaluate the `Get()` for errors every time.
+Instead of returning an error, `Get()` function panics when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as follows 
+
+```go
+Get("foo").Get("bar").Get("", 2)
+```
+
+without having to evaluate for errors every time.
