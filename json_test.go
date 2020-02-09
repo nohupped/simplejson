@@ -110,6 +110,7 @@ func TestStringFail(t *testing.T){
 }
 
 
+// TestGetFail tests "Not Implemented" part of the Get method.
 func TestGetFail(t *testing.T){
 	defer func() {
         if r := recover(); r != nil {
