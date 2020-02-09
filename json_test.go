@@ -79,3 +79,45 @@ func TestLoadFail(t *testing.T) {
 	
 	fd.Close()
 }
+
+// TestLoadKeyFail tests the key error.
+func TestLoadsKeyFail(t *testing.T) {
+	defer func() {
+        if r := recover(); r != nil {
+            t.Logf("Recovered from Key Error %s", r)
+        }
+	}()
+	
+	d, err := Loads(sampleJSON)
+	if err != nil {
+		panic(err)
+	}
+	t.Logf("%s\n\n", d)
+	data := d.Get("Actors").Get("", 0).Get("names")
+	t.Logf("%s\n", data)
+}
+
+// TestStringFail tests the json Marshal error in the String method.
+func TestStringFail(t *testing.T){
+	defer func() {
+        if r := recover(); r != nil {
+            t.Logf("Recovered from Json Marshal %s", r)
+        }
+	}()
+	d := new(data)
+	d.jsonData = make(chan int)
+	t.Logf("Output is %s", d.String())
+}
+
+
+// TestGetFail tests "Not Implemented" part of the Get method.
+func TestGetFail(t *testing.T){
+	defer func() {
+        if r := recover(); r != nil {
+            t.Logf("Recovered from implementation error: %s", r)
+        }
+	}()
+	d := new(data)
+	d.jsonData = make(chan int)
+	t.Logf("Output is %s", d.Get("Invalid"))
+}
