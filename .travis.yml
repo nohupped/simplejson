@@ -7,7 +7,6 @@ before_script:
 
 script:
   - golangci-lint run
-  - env GO111MODULE=on go build
   - env GO111MODULE=on go test -v -race -coverprofile=coverage.txt *.go
 after_success:
   - bash <(curl -s https://codecov.io/bash)
