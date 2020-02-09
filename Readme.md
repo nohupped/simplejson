@@ -51,3 +51,7 @@ fmt.Println(data) // outputs Tom Cruise
 ```
 
 Because this uses `interface{}` to unmarshal json, the structure of json is not required to be predefined. Each `Get()` evaluates the type and extracts accordingly.
+
+## `Get()` function panics if the key is not present
+
+Instead of returning an error, `Get()` function panics when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as `Get("foo").Get("bar").Get("", 2)` without needing to evaluate the `Get()` for errors every time.
