@@ -1,7 +1,7 @@
 package simplejson
 
 import (
-	"reflect"
+	"os"
 	"testing"
 )
 
@@ -35,6 +35,18 @@ func TestLoads(t *testing.T) {
 	}
 	t.Logf("%s\n\n", d)
 	data := d.Get("Actors").Get("", 0).Get("name")
-	t.Logf("%s, %s\n", data, reflect.TypeOf(data))
+	t.Logf("%s\n", data)
+
+	fd, err := os.Open("samplejson.json")
+	if err != nil {
+		panic(err)
+	}
+	d1, err := Load(fd)
+	if err != nil{
+		panic(err)
+	}
+	t.Logf("Extracting tag from json file: %s", d1.Get("", 2).Get("tags").Get("", 3))
+
+	fd.Close()
 
 }

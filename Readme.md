@@ -10,10 +10,10 @@ This is a wrapper over go's `encoding/json`. This uses an `interface{}` to unmar
 
 ## Example
 
-Consider the json
+Consider the json string
 
-```json
-{
+```go
+sampleJSON := `{
     "Actors":
     [
         {
@@ -34,7 +34,7 @@ Consider the json
             "photo": "https://jsonformatter.org/img/Robert-Downey-Jr.jpg"
         }
     ]
-}
+}`
 ```
 
 This can be parsed and values can be fetched as
@@ -49,6 +49,27 @@ data := d.Get("Actors").Get("", 0).Get("name")
 fmt.Println(data) // outputs Tom Cruise
 
 ```
+
+Consider the json file `samplejson.json` in this repository.
+
+This file can be parsed and the values can be fetched as
+
+```go
+fd, err := os.Open("samplejson.json")
+if err != nil {
+    panic(err)
+}
+d1, err := Load(fd)
+if err != nil{
+    panic(err)
+}
+t.Logf("%s", d1.Get("", 2).Get("tags").Get("", 3))
+
+fd.Close()
+
+```
+
+It is the responsibility of the caller to close the file descriptor.
 
 Because this uses `interface{}` to unmarshal json, the structure of json is not required to be predefined. Each `Get()` evaluates the type and extracts accordingly.
 

@@ -3,6 +3,8 @@ package simplejson
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"reflect"
 	"sync"
 )
@@ -15,7 +17,7 @@ type Getter interface {
 	// where the first parameter is irrelevant and 0 indicates the index of the element in the json slice.
 	// Eg: data := d.Get("Actors").Get("", 0).Get("name")
 	Get(string, ...int) Getter
-	// Return the json string representation of the selected key's value (Equicalent to json.Dumps).
+	// Return the json string representation of the selected key's value (Equivalent to json.Dumps()).
 	String() string
 }
 
@@ -36,6 +38,15 @@ func Loads(s string) (Getter, error) {
 		return nil, err
 	}
 	return j, nil
+}
+
+// Load accepts an io.Reader to read the content and unmarshall the json. The called must close the handler passed to this function.
+func Load(i io.Reader) (Getter, error) {
+	d, err := ioutil.ReadAll(i)
+	if err != nil {
+		return nil, err
+	}
+	return Loads(string(d))
 }
 
 // Get method is to get the value of a json key. Get() also accepts an optional index number.
