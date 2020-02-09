@@ -79,3 +79,19 @@ func TestLoadFail(t *testing.T) {
 	
 	fd.Close()
 }
+
+func TestLoadsKeyFail(t *testing.T) {
+	defer func() {
+        if r := recover(); r != nil {
+            t.Logf("Recovered from Key Error %s", r)
+        }
+	}()
+	
+	d, err := Loads(sampleJSON)
+	if err != nil {
+		panic(err)
+	}
+	t.Logf("%s\n\n", d)
+	data := d.Get("Actors").Get("", 0).Get("names")
+	t.Logf("%s\n", data)
+}
