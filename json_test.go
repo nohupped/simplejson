@@ -121,7 +121,3 @@ func TestGetFail(t *testing.T){
 	d.jsonData = make(chan int)
 	t.Logf("Output is %s", d.Get("Invalid"))
 }
-
-
-
-
