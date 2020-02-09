@@ -38,6 +38,16 @@ func TestLoads(t *testing.T) {
 	data := d.Get("Actors").Get("", 0).Get("name")
 	t.Logf("%s\n", data)
 
+}
+
+func TestLoadsFail(t *testing.T) {
+	_, err := Loads(fmt.Sprintf("%s%s",sampleJSON, "invalidJson"))
+	if err != nil{
+		t.Logf("Error parsing json: %s", err)
+	}
+}
+
+func TestLoad(t *testing.T) {
 	fd, err := os.Open("samplejson.json")
 	if err != nil {
 		panic(err)
@@ -49,12 +59,4 @@ func TestLoads(t *testing.T) {
 	t.Logf("Extracting tag from json file: %s", d1.Get("", 2).Get("tags").Get("", 3))
 
 	fd.Close()
-
-}
-
-func TestLoadsFail(t *testing.T) {
-	_, err := Loads(fmt.Sprintf("%s%s",sampleJSON, "invalidJson"))
-	if err != nil{
-		t.Logf("Error parsing json: %s", err)
-	}
 }
