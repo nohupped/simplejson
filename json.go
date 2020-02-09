@@ -31,7 +31,7 @@ type data struct {
 // Loads load a json string and returns a Getter
 func Loads(s string) (Getter, error) {
 	j := new(data)
-	err := j.unmarshallJSON([]byte(s))
+	err := j.unmarshalJSON([]byte(s))
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (d *data) String() string {
 	return fmt.Sprintf("%s", data)
 }
 
-func (d *data) unmarshallJSON(b []byte) error {
+func (d *data) unmarshalJSON(b []byte) error {
 	d.Lock()
 	defer d.Unlock()
 	err := json.Unmarshal(b, &d.jsonData)
