@@ -87,13 +87,26 @@ func TestLoadsKeyFail(t *testing.T) {
 func TestStringFail(t *testing.T) {
 	defer func() {
         if r := recover(); r != nil {
-			t.Logf("Expected recovery from Json Marshal. Error is: %s", r)
+			t.Logf("Expected recovery from Json Marshal in String() method. Error is: %s", r)
 			assert.EqualError(t, r.(error), "json: unsupported type: chan int")
         }
 	}()
 	d := new(data)
 	d.jsonData = make(chan int)
 	t.Logf("%s", d.String())
+}
+
+// TestDumpAsBytesFail tests the json Marshal error in the String method.
+func TestDumpAsBytesFail(t *testing.T) {
+	defer func() {
+        if r := recover(); r != nil {
+			t.Logf("Expected recovery from Json Marshal in DumpAsBytes() method. Error is: %s", r)
+			assert.EqualError(t, r.(error), "json: unsupported type: chan int")
+        }
+	}()
+	d := new(data)
+	d.jsonData = make(chan int)
+	t.Logf("%s", d.DumpAsBytes())
 }
 
 
