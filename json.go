@@ -17,8 +17,10 @@ type Getter interface {
 	// where the first parameter is irrelevant and 0 indicates the index of the element in the json slice.
 	// Eg: data := d.Get("Actors").Get("", 0).Get("name")
 	Get(string, ...int) Getter
-	// Return the json string representation of the selected key's value (Equivalent to json.Dumps()).
+	// String return the json string representation of the selected key's value (Equivalent to json.Dumps()).
 	String() string
+	// Bytes return the marshalled byte representation of the value
+	Bytes() []byte
 }
 
 // jsonData Holds the actual unmarshalled data
@@ -31,13 +33,18 @@ type data struct {
 }
 
 // Loads load a json string and returns a Getter
-func Loads(s string) (Getter, error) {
+func Loads(b []byte) (Getter, error) {
 	j := new(data)
-	err := j.unmarshalJSON([]byte(s))
+	err := j.unmarshalJSON(b)
 	if err != nil {
 		return nil, err
 	}
 	return j, nil
+}
+
+// Dumps returns the string representation of a type.
+func Dumps(o interface{}) ([]byte, error) {
+	return json.Marshal(o)
 }
 
 // Load accepts an io.Reader to read the content and unmarshall the json. The called must close the handler passed to this function.
@@ -46,7 +53,7 @@ func Load(i io.Reader) (Getter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Loads(string(d))
+	return Loads(d)
 }
 
 // Get method is to get the value of a json key. Get() also accepts an optional index number.
@@ -65,19 +72,21 @@ func (d *data) Get(key string, index ...int) Getter {
 
 	case map[string]interface{}:
 		if d.jsonData.(map[string]interface{})[key] == nil {
-			panic(fmt.Sprintf("Key error: %s not found\n", key))
+			panic(fmt.Errorf("key error: %s not found", key))
 		}
 		sliceData.jsonData = d.jsonData.(map[string]interface{})[key]
+
 	case []interface{}:
 		sliceData.jsonData = d.jsonData.([]interface{})[index[0]]
 
 	default:
-		panic(fmt.Sprintf("Not implemented for %s\n", reflect.TypeOf(d.jsonData)))
+		panic(fmt.Errorf("not implemented for %s", reflect.TypeOf(d.jsonData)))
 	}
 
 	return sliceData
 }
 
+// String return the json string representation of the selected key's value (Equivalent to json.Dumps()).
 func (d *data) String() string {
 	d.Lock()
 	defer d.Unlock()
@@ -86,6 +95,17 @@ func (d *data) String() string {
 		panic(err)
 	}
 	return fmt.Sprintf("%s", data)
+}
+
+// Bytes return the marshalled byte representation of the value
+func (d *data) Bytes() []byte {
+	d.Lock()
+	defer d.Unlock()
+	data, err := json.Marshal(d.jsonData)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }
 
 func (d *data) unmarshalJSON(b []byte) error {
@@ -97,4 +117,3 @@ func (d *data) unmarshalJSON(b []byte) error {
 	}
 	return nil
 }
-
