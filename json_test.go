@@ -121,9 +121,11 @@ func TestJsonTypes(t *testing.T) {
 	val, err = Dumps(true)
 	assert.Nil(err)
 	data, err = Loads(val)
+	assert.Nil(err)
 	assert.EqualValuesf(data.DumpAsBytes(), []byte{0x74, 0x72, 0x75, 0x65}, "true in byte slice")
 	val, err = Dumps(nil)
 	assert.Nil(err)
 	data, err = Loads(val)
+	assert.Nil(err)
 	assert.EqualValuesf(data.DumpAsBytes(), []byte{0x6e, 0x75, 0x6c, 0x6c}, "null in byte slice")
 }
