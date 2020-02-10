@@ -31,13 +31,18 @@ type data struct {
 }
 
 // Loads load a json string and returns a Getter
-func Loads(s string) (Getter, error) {
+func Loads(b []byte) (Getter, error) {
 	j := new(data)
-	err := j.unmarshalJSON([]byte(s))
+	err := j.unmarshalJSON(b)
 	if err != nil {
 		return nil, err
 	}
 	return j, nil
+}
+
+// Dumps returns the string representation of a type.
+func Dumps(o interface{}) ([]byte, error){
+	return json.Marshal(o)
 }
 
 // Load accepts an io.Reader to read the content and unmarshall the json. The called must close the handler passed to this function.
@@ -46,7 +51,7 @@ func Load(i io.Reader) (Getter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Loads(string(d))
+	return Loads(d)
 }
 
 // Get method is to get the value of a json key. Get() also accepts an optional index number.

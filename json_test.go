@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"reflect"
+	"github.com/stretchr/testify/assert"
 )
 var sampleJSON string =`{
 	"Actors": [
@@ -31,36 +33,25 @@ var sampleJSON string =`{
 // TestLoads parses a valid json and gets keys.
 func TestLoads(t *testing.T) {
 
-	d, err := Loads(sampleJSON)
-	if err != nil {
-		panic(err)
-	}
-	t.Logf("%s\n\n", d)
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
 	data := d.Get("Actors").Get("", 0).Get("name")
-	t.Logf("%s\n", data)
-
+	assert.Equal(t, data.String(), "\"Tom Cruise\"", "Should equals Tom Cruise")
 }
 
 // TestLoadsFail parses an invalid json to test the failure to parse.
 func TestLoadsFail(t *testing.T) {
-	_, err := Loads(fmt.Sprintf("%s%s",sampleJSON, "invalidJson"))
-	if err != nil{
-		t.Logf("Error parsing json: %s", err)
-	}
+	_, err := Loads([]byte(fmt.Sprintf("%s%s",sampleJSON, "invalidJson")))
+	assert.EqualError(t, err, "invalid character 'i' after top-level value")
 }
 
 // TestLoad does simplejson.Load() to load json from disk.
-func TestLoad(t *testing.T) {
+func TestLoad(t *testing.T) {	
 	fd, err := os.Open("samplejson.json")
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(t, err)
 	d1, err := Load(fd)
-	if err != nil{
-		panic(err)
-	}
-	t.Logf("Extracting tag from json file: %s", d1.Get("", 2).Get("tags").Get("", 3))
-
+	assert.Nil(t, err)
+	assert.Equal(t, d1.Get("", 2).Get("tags").Get("", 3).String(), "\"incididunt\"")
 	fd.Close()
 }
 
@@ -69,55 +60,60 @@ func TestLoad(t *testing.T) {
 func TestLoadFail(t *testing.T) {
 	fd, err := os.Open("samplejson.json")
 	fd.Close()
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(t, err)
 	_, err = Load(fd)
-	if err != nil{
-		t.Logf("Error in ioutil.ReadAll :%s", err)
-	}
-	
-	fd.Close()
+	assert.NotNil(t, err)
+	assert.Equal(t, err.Error(), "read samplejson.json: file already closed")
 }
 
 // TestLoadKeyFail tests the key error.
 func TestLoadsKeyFail(t *testing.T) {
 	defer func() {
         if r := recover(); r != nil {
-            t.Logf("Recovered from Key Error %s", r)
+			t.Logf("Expected recovery from Key Error. Error is: %s", r)
+			assert.Equal(t, r, "Key error: names not found\n")
         }
 	}()
 	
-	d, err := Loads(sampleJSON)
+	d, err := Loads([]byte(sampleJSON))
 	if err != nil {
 		panic(err)
 	}
-	t.Logf("%s\n\n", d)
-	data := d.Get("Actors").Get("", 0).Get("names")
-	t.Logf("%s\n", data)
+	d.Get("Actors").Get("", 0).Get("names")
+
 }
 
 // TestStringFail tests the json Marshal error in the String method.
-func TestStringFail(t *testing.T){
+func TestStringFail(t *testing.T) {
 	defer func() {
         if r := recover(); r != nil {
-            t.Logf("Recovered from Json Marshal %s", r)
+			t.Logf("Expected recovery from Json Marshal. Error is: %s", r)
         }
 	}()
 	d := new(data)
 	d.jsonData = make(chan int)
-	t.Logf("Output is %s", d.String())
 }
 
 
 // TestGetFail tests "Not Implemented" part of the Get method.
-func TestGetFail(t *testing.T){
+func TestGetFail(t *testing.T) {
 	defer func() {
         if r := recover(); r != nil {
-            t.Logf("Recovered from implementation error: %s", r)
+			t.Logf("Expected recovery from implementation error. Error is: %s", r)
+			assert.Equal(t, r, "Not implemented for chan int\n")
         }
 	}()
 	d := new(data)
 	d.jsonData = make(chan int)
 	t.Logf("Output is %s", d.Get("Invalid"))
+}
+
+
+func TestJsonTypes(t *testing.T) {
+	val1, err := Dumps(10000)
+	if err != nil {
+		panic(err)
+	}
+	t.Logf("%s: %s: %x", val1, reflect.TypeOf(val1), val1)
+	// data1, err := Loads(val1)
 }
