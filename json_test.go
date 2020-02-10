@@ -92,6 +92,7 @@ func TestStringFail(t *testing.T) {
 	}()
 	d := new(data)
 	d.jsonData = make(chan int)
+	t.Logf("Output is %s", d.String())
 }
 
 
