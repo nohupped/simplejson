@@ -19,6 +19,8 @@ type Getter interface {
 	Get(string, ...int) Getter
 	// Return the json string representation of the selected key's value (Equivalent to json.Dumps()).
 	String() string
+	// Return the marshalled byte representation of the value
+	DumpAsBytes() []byte
 }
 
 // jsonData Holds the actual unmarshalled data
@@ -70,14 +72,14 @@ func (d *data) Get(key string, index ...int) Getter {
 
 	case map[string]interface{}:
 		if d.jsonData.(map[string]interface{})[key] == nil {
-			panic(fmt.Sprintf("Key error: %s not found\n", key))
+			panic(fmt.Errorf("key error: %s not found", key))
 		}
 		sliceData.jsonData = d.jsonData.(map[string]interface{})[key]
 	case []interface{}:
 		sliceData.jsonData = d.jsonData.([]interface{})[index[0]]
 
 	default:
-		panic(fmt.Sprintf("Not implemented for %s\n", reflect.TypeOf(d.jsonData)))
+		panic(fmt.Errorf("not implemented for %s", reflect.TypeOf(d.jsonData)))
 	}
 
 	return sliceData
@@ -91,6 +93,16 @@ func (d *data) String() string {
 		panic(err)
 	}
 	return fmt.Sprintf("%s", data)
+}
+
+func (d *data) DumpAsBytes() []byte {
+	d.Lock()
+	defer d.Unlock()
+	data, err := json.Marshal(d.jsonData)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }
 
 func (d *data) unmarshalJSON(b []byte) error {

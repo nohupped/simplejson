@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"reflect"
+
 	"github.com/stretchr/testify/assert"
 )
 var sampleJSON string =`{
@@ -63,7 +63,7 @@ func TestLoadFail(t *testing.T) {
 	assert.Nil(t, err)
 	_, err = Load(fd)
 	assert.NotNil(t, err)
-	assert.Equal(t, err.Error(), "read samplejson.json: file already closed")
+	assert.EqualError(t, err, "read samplejson.json: file already closed")
 }
 
 // TestLoadKeyFail tests the key error.
@@ -71,7 +71,7 @@ func TestLoadsKeyFail(t *testing.T) {
 	defer func() {
         if r := recover(); r != nil {
 			t.Logf("Expected recovery from Key Error. Error is: %s", r)
-			assert.Equal(t, r, "Key error: names not found\n")
+			assert.EqualError(t, r.(error), "key error: names not found")
         }
 	}()
 	
@@ -88,11 +88,12 @@ func TestStringFail(t *testing.T) {
 	defer func() {
         if r := recover(); r != nil {
 			t.Logf("Expected recovery from Json Marshal. Error is: %s", r)
+			assert.EqualError(t, r.(error), "json: unsupported type: chan int")
         }
 	}()
 	d := new(data)
 	d.jsonData = make(chan int)
-	t.Logf("Output is %s", d.String())
+	t.Logf("%s", d.String())
 }
 
 
@@ -100,8 +101,8 @@ func TestStringFail(t *testing.T) {
 func TestGetFail(t *testing.T) {
 	defer func() {
         if r := recover(); r != nil {
-			t.Logf("Expected recovery from implementation error. Error is: %s", r)
-			assert.Equal(t, r, "Not implemented for chan int\n")
+			t.Logf("Expected recovery from String() method. Error is: %s", r)
+			assert.EqualError(t, r.(error), "not implemented for chan int")
         }
 	}()
 	d := new(data)
@@ -111,10 +112,18 @@ func TestGetFail(t *testing.T) {
 
 
 func TestJsonTypes(t *testing.T) {
-	val1, err := Dumps(10000)
-	if err != nil {
-		panic(err)
-	}
-	t.Logf("%s: %s: %x", val1, reflect.TypeOf(val1), val1)
-	// data1, err := Loads(val1)
+	assert := assert.New(t)
+	val, err := Dumps(10000)
+	assert.Nil(err)
+	data, err := Loads(val)
+	assert.Nil(err)
+	assert.EqualValuesf(data.DumpAsBytes(), []byte{0x31, 0x30, 0x30, 0x30, 0x30}, "10000 in byte slice")
+	val, err = Dumps(true)
+	assert.Nil(err)
+	data, err = Loads(val)
+	assert.EqualValuesf(data.DumpAsBytes(), []byte{0x74, 0x72, 0x75, 0x65}, "true in byte slice")
+	val, err = Dumps(nil)
+	assert.Nil(err)
+	data, err = Loads(val)
+	assert.EqualValuesf(data.DumpAsBytes(), []byte{0x6e, 0x75, 0x6c, 0x6c}, "null in byte slice")
 }
