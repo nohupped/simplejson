@@ -72,7 +72,7 @@ func (d *data) Get(key string, index ...int) Getter {
 
 	case map[string]interface{}:
 		if d.jsonData.(map[string]interface{})[key] == nil {
-			panic(fmt.Errorf("key error: %s not found", key))
+			return nil
 		}
 		sliceData.jsonData = d.jsonData.(map[string]interface{})[key]
 

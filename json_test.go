@@ -40,6 +40,14 @@ func TestLoads(t *testing.T) {
 	assert.Equal(t, data.String(), "\"Tom Cruise\"", "Should equals Tom Cruise")
 }
 
+func TestNil(t *testing.T) {
+
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 0).Get("names")
+	assert.Nil(t, data)
+}
+
 // TestLoadsFail parses an invalid json to test the failure to parse.
 func TestLoadsFail(t *testing.T) {
 	_, err := Loads([]byte(fmt.Sprintf("%s%s", sampleJSON, "invalidJson")))
