@@ -40,7 +40,8 @@ func TestLoads(t *testing.T) {
 	assert.Equal(t, data.String(), "\"Tom Cruise\"", "Should equals Tom Cruise")
 }
 
-func TestLoadsEmpty(t *testing.T) {
+// TestLoadsEmptyString tests the String method on an empty type. Should return "" for a non-existing key.
+func TestLoadsEmptyString(t *testing.T) {
 
 	d, err := Loads([]byte(sampleJSON))
 	assert.Nil(t, err)
@@ -48,11 +49,12 @@ func TestLoadsEmpty(t *testing.T) {
 	assert.Equal(t, data.String(), "", "Should equals \"\"")
 }
 
+// TestEmpty tests Get on an invalid key for the return type empty. This will prevent the nil pointer dereference error when the key doesn't exist.
 func TestEmpty(t *testing.T) {
 
 	d, err := Loads([]byte(sampleJSON))
 	assert.Nil(t, err)
-	data := d.Get("Actors").Get("", 0).Get("names")
+	data := d.Get("Actors").Get("", 0).Get("names").Get("foo")
 	e := new(empty)
 	if data != nil {
 		assert.IsType(t, e, data)
@@ -130,6 +132,13 @@ func TestDumpAsBytesFail(t *testing.T) {
 	t.Logf("%s", d.Bytes())
 }
 
+// TestEmptyByte tests the Bytes() on the empty type.
+func TestEmptyByte(t *testing.T) {
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 0).Get("names").Get("Foo").Bytes()
+	assert.Nil(t, data)
+}
 // TestGetFail tests "Not Implemented" part of the Get method.
 func TestGetFail(t *testing.T) {
 	defer func() {
