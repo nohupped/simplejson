@@ -45,7 +45,11 @@ func TestNil(t *testing.T) {
 	d, err := Loads([]byte(sampleJSON))
 	assert.Nil(t, err)
 	data := d.Get("Actors").Get("", 0).Get("names")
-	assert.Nil(t, data)
+	if data != nil {
+		assert.Nil(t, data)
+	} else {
+		assert.Nil(t, data)
+	}
 }
 
 // TestLoadsFail parses an invalid json to test the failure to parse.
