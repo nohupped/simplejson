@@ -40,15 +40,24 @@ func TestLoads(t *testing.T) {
 	assert.Equal(t, data.String(), "\"Tom Cruise\"", "Should equals Tom Cruise")
 }
 
-func TestNil(t *testing.T) {
+func TestLoadsEmpty(t *testing.T) {
+
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 0).Get("names").Get("Foo").Get("Bar")
+	assert.Equal(t, data.String(), "", "Should equals \"\"")
+}
+
+func TestEmpty(t *testing.T) {
 
 	d, err := Loads([]byte(sampleJSON))
 	assert.Nil(t, err)
 	data := d.Get("Actors").Get("", 0).Get("names")
+	e := new(empty)
 	if data != nil {
-		assert.Nil(t, data)
+		assert.IsType(t, e, data)
 	} else {
-		assert.Nil(t, data)
+		assert.IsType(t, e, data)
 	}
 }
 

@@ -71,7 +71,7 @@ It is the responsibility of the caller to close the file descriptor.
 
 Because this uses `interface{}` to unmarshal json, the structure of json is not required to be predefined. Each `Get()` evaluates the type and extracts accordingly.
 
-## `Get()` function panics if the key is not present
+## `Get()` function ~~panics~~ returns `nil` if the key is not present
 
 Instead of returning an error, `Get()` function panics when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as follows
 
