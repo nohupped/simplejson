@@ -33,9 +33,7 @@ type data struct {
 }
 
 // empty type is used to return an empty value so that users can evaluate the return type.
-type empty struct{
-	jsonData
-}
+type empty struct{}
 
 func (e *empty) Get(key string, index ...int) Getter {
 	return e
@@ -47,7 +45,7 @@ func (e *empty) Bytes() []byte {
 
 
 func (e *empty) String() string {
-	return fmt.Sprintf("%s", "")
+	return ""
 }
 
 // Loads load a json string and returns a Getter
