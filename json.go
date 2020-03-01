@@ -94,6 +94,10 @@ func (d *data) Get(key string, index ...int) Getter {
 		sliceData.jsonData = d.jsonData.(map[string]interface{})[key]
 
 	case []interface{}:
+		if len(d.jsonData.([]interface{})) < (index[0]) {
+			e := new(empty)
+			return e
+		}
 		sliceData.jsonData = d.jsonData.([]interface{})[index[0]]
 
 	default:

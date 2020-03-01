@@ -139,6 +139,15 @@ func TestEmptyByte(t *testing.T) {
 	data := d.Get("Actors").Get("", 0).Get("names").Get("Foo").Bytes()
 	assert.Nil(t, data)
 }
+
+// TestInvalidIndex tests for out of range index number.
+func TestInvalidIndex(t *testing.T) {
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 200).Get("names").Get("Foo").Bytes()
+	assert.Nil(t, data)
+}
+
 // TestGetFail tests "Not Implemented" part of the Get method.
 func TestGetFail(t *testing.T) {
 	defer func() {
