@@ -40,6 +40,29 @@ func TestLoads(t *testing.T) {
 	assert.Equal(t, data.String(), "\"Tom Cruise\"", "Should equals Tom Cruise")
 }
 
+// TestLoadsEmptyString tests the String method on an empty type. Should return "" for a non-existing key.
+func TestLoadsEmptyString(t *testing.T) {
+
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 0).Get("names").Get("Foo").Get("Bar")
+	assert.Equal(t, data.String(), "", "Should equals \"\"")
+}
+
+// TestEmpty tests Get on an invalid key for the return type empty. This will prevent the nil pointer dereference error when the key doesn't exist.
+func TestEmpty(t *testing.T) {
+
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 0).Get("names").Get("foo")
+	e := new(empty)
+	if data != nil {
+		assert.IsType(t, e, data)
+	} else {
+		assert.IsType(t, e, data)
+	}
+}
+
 // TestLoadsFail parses an invalid json to test the failure to parse.
 func TestLoadsFail(t *testing.T) {
 	_, err := Loads([]byte(fmt.Sprintf("%s%s", sampleJSON, "invalidJson")))
@@ -107,6 +130,22 @@ func TestDumpAsBytesFail(t *testing.T) {
 	d := new(data)
 	d.jsonData = make(chan int)
 	t.Logf("%s", d.Bytes())
+}
+
+// TestEmptyByte tests the Bytes() on the empty type.
+func TestEmptyByte(t *testing.T) {
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 0).Get("names").Get("Foo").Bytes()
+	assert.Nil(t, data)
+}
+
+// TestInvalidIndex tests for out of range index number.
+func TestInvalidIndex(t *testing.T) {
+	d, err := Loads([]byte(sampleJSON))
+	assert.Nil(t, err)
+	data := d.Get("Actors").Get("", 200).Get("names").Get("Foo").Bytes()
+	assert.Nil(t, data)
 }
 
 // TestGetFail tests "Not Implemented" part of the Get method.

@@ -32,6 +32,22 @@ type data struct {
 	jsonData
 }
 
+// empty type is used to return an empty value so that users can evaluate the return type.
+type empty struct{}
+
+func (e *empty) Get(key string, index ...int) Getter {
+	return e
+}
+
+func (e *empty) Bytes() []byte {
+	return nil
+}
+
+
+func (e *empty) String() string {
+	return ""
+}
+
 // Loads load a json string and returns a Getter
 func Loads(b []byte) (Getter, error) {
 	j := new(data)
@@ -72,11 +88,16 @@ func (d *data) Get(key string, index ...int) Getter {
 
 	case map[string]interface{}:
 		if d.jsonData.(map[string]interface{})[key] == nil {
-			panic(fmt.Errorf("key error: %s not found", key))
+			e := new(empty)
+			return e
 		}
 		sliceData.jsonData = d.jsonData.(map[string]interface{})[key]
 
 	case []interface{}:
+		if len(d.jsonData.([]interface{})) < (index[0]) {
+			e := new(empty)
+			return e
+		}
 		sliceData.jsonData = d.jsonData.([]interface{})[index[0]]
 
 	default:

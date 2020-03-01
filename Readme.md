@@ -71,12 +71,27 @@ It is the responsibility of the caller to close the file descriptor.
 
 Because this uses `interface{}` to unmarshal json, the structure of json is not required to be predefined. Each `Get()` evaluates the type and extracts accordingly.
 
-## `Get()` function panics if the key is not present
+## `Get()` function ~~panics~~ returns `nil` if the key is not present
 
-Instead of returning an error, `Get()` function panics when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as follows
+Instead of returning an error, `Get()` function ~~panics~~ returns `nil` when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as follows
 
 ```go
 Get("foo").Get("bar").Get("", 2)
 ```
 
-without having to evaluate for errors every time.
+without having to evaluate for errors every time or to have to write a `recover` as below.
+
+```go
+defer func() {
+    if r := recover(); r != nil {...}
+```
+
+## `String()` function returns empty string `""` for `nil` values
+
+This is done to avoid the
+
+```bash
+panic: runtime error: invalid memory address or nil pointer dereference
+```
+
+at runtime. Evaluate for `nil` value before applying `String()` method.
