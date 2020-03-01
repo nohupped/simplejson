@@ -71,9 +71,9 @@ It is the responsibility of the caller to close the file descriptor.
 
 Because this uses `interface{}` to unmarshal json, the structure of json is not required to be predefined. Each `Get()` evaluates the type and extracts accordingly.
 
-## `Get()` function ~~panics~~ returns `nil` if the key is not present
+## `Get()` function ~~panics~~ returns `nil` for the method `Bytes()` if the key is not present
 
-Instead of returning an error, `Get()` function ~~panics~~ returns `nil` when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as follows
+Instead of returning an error, `Get()` function ~~panics~~ returns `nil` for the `Bytes()` method when trying to fetch an invalid key or trying to read from an invalid index. This is done to easily chain the method as follows
 
 ```go
 Get("foo").Get("bar").Get("", 2)
@@ -84,6 +84,23 @@ without having to evaluate for errors every time or to have to write a `recover`
 ```go
 defer func() {
     if r := recover(); r != nil {...}
+```
+
+Evaluate for `nil` value before using it.
+
+Eg:
+
+```go
+d, err := simplejson.Loads([]byte(sampleJSON))
+if err != nil {
+    ...
+}
+d1 := d.Get("Actors").Get("", 0).Get("names").Get("foo").Get("Bar")
+if d1.Bytes != nil {
+    ...
+}
+...
+
 ```
 
 ## `String()` function returns empty string `""` for `nil` values

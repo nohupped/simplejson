@@ -54,12 +54,15 @@ func TestEmpty(t *testing.T) {
 
 	d, err := Loads([]byte(sampleJSON))
 	assert.Nil(t, err)
-	data := d.Get("Actors").Get("", 0).Get("names").Get("foo")
+	d1 := d.Get("Actors").Get("", 0).Get("names").Get("foo")
 	e := new(empty)
-	if data != nil {
-		assert.IsType(t, e, data)
+	if d1 != nil {
+		assert.IsType(t, e, d1)
+		assert.Nil(t, d1.Bytes())
+		assert.Equal(t, d1.String(), "")
+
 	} else {
-		assert.IsType(t, e, data)
+		assert.Fail(t, "This shouldn't be nil")
 	}
 }
 
