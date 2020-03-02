@@ -1,4 +1,4 @@
-# { SimpleJSON } [![Build Status](https://travis-ci.com/nohupped/simplejson.svg?branch=master)](https://travis-ci.com/nohupped/simplejson) [![codecov.io](https://codecov.io/github/nohupped/simplejson/coverage.svg?branch=master)](https://codecov.io/github/nohupped/simplejson?branch=master)
+# { SimpleJSON } [![Build Status](https://travis-ci.com/nohupped/simplejson.svg?branch=master)](https://travis-ci.com/nohupped/simplejson) [![codecov.io](https://codecov.io/github/nohupped/simplejson/coverage.svg?branch=master)](https://codecov.io/github/nohupped/simplejson?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/nohupped/simplejson)](https://goreportcard.com/report/github.com/nohupped/simplejson)
 
 A lame attempt to re-create python's `json.loads()` using `Get()` methods to retrive a key by moving the ugly typeassertions to the library.
 

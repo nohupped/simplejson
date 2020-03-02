@@ -43,7 +43,6 @@ func (e *empty) Bytes() []byte {
 	return nil
 }
 
-
 func (e *empty) String() string {
 	return ""
 }
